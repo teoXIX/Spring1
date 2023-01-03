@@ -50,4 +50,10 @@ public class CourseController {
             return new ResponseEntity<>(courseRepository.save(_corso), HttpStatus.OK);
         }
     }
+
+    @GetMapping(value = "/course/{id}")
+    public ResponseEntity <Optional<Course>> findCourse(@PathVariable("id") long id){
+        Optional<Course> _corso = courseRepository.findById(id);
+        return new ResponseEntity<Optional<Course>>(_corso, HttpStatus.OK);
+    }
 }
