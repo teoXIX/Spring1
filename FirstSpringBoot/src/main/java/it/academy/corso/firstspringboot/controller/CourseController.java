@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -37,5 +38,16 @@ public class CourseController {
     public ResponseEntity<HttpStatus> deleteCourse(@PathVariable("id") long id) {
         courseRepository.deleteById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping(value = "/course/{id}")
+    public ResponseEntity<Course> updateCourse(@RequestBody Course corso, @PathVariable("id") long id) {
+        Course _corso = courseRepository.getReferenceById(id);
+        if(_corso == null)
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        else {
+            _corso.setNomeCorso(corso.getNomeCorso());
+            return new ResponseEntity<>(courseRepository.save(_corso), HttpStatus.OK);
+        }
     }
 }
