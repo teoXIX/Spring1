@@ -7,15 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+import it.academy.corso.firstspringboot.model.User;
+import it.academy.corso.firstspringboot.repository.UserRepository;
 @RestController
 @RequestMapping("/api")
 public class CourseController {
     @Autowired
     CourseRepository courseRepository;
+    UserRepository userRepository;
 
     @PostMapping("/course")
     public ResponseEntity<Course> createCourse(@RequestBody Course corso) {
@@ -55,5 +56,15 @@ public class CourseController {
     public ResponseEntity <Optional<Course>> findCourse(@PathVariable("id") long id){
         Optional<Course> _corso = courseRepository.findById(id);
         return new ResponseEntity<Optional<Course>>(_corso, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/user/{id}/course")
+    public ResponseEntity<Course> CreateCourseUser(@PathVariable Long id, @RequestBody Course course){
+        User user = userRepository.getReferenceById(id);
+        Set<User> userSet = new HashSet<>();
+        userSet.add(user);
+        course.setUser(userSet);
+        Course corso = courseRepository.save(course);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
