@@ -1,8 +1,8 @@
 package it.academy.corso.firstspringboot.security;
 
-import it.course.rest.examplecourse.security.jwt.AuthEntryPointJwt;
-import it.course.rest.examplecourse.security.jwt.AuthTokenFilter;
-import it.course.rest.examplecourse.security.services.UserDetailsServiceImpl;
+import it.academy.corso.firstspringboot.security.jwt.AuthEntryPointJwt;
+import it.academy.corso.firstspringboot.security.jwt.AuthTokenFilter;
+import it.academy.corso.firstspringboot.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
