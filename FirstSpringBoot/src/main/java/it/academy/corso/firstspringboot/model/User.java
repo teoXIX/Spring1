@@ -1,56 +1,70 @@
 package it.academy.corso.firstspringboot.model;
 
-import jakarta.persistence.*;
-import javax.validation.constraints.*;
-import java.util.*;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
+import jakarta.persistence.*;
+import lombok.*;
+import javax.validation.constraints.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+
 @Entity
-@Table(name = "user")
+@Table(name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = "username"),
+                @UniqueConstraint(columnNames = "email")
+        })
 public class User {
     @Id
-    @Column(name = "id", nullable = false)
-    @Getter
     @Setter
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-
-    @Column(name = "username")
     @Getter
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Setter
+    @Getter
     @NotBlank
     @Size(max = 20)
     private String username;
-
-    @Column(name = "email")
-    @Getter
     @Setter
+    @Getter
     @NotBlank
     @Size(max = 50)
     @Email
     private String email;
-
-    @Column(name = "password")
-    @Getter
     @Setter
+    @Getter
     @NotBlank
     @Size(max = 120)
     private String password;
 
-    @ManyToMany(cascade = CascadeType.DETACH)
-    @JoinTable(name = "course_user",
+    @Getter
+    @Setter
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "course_id"))
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    private Set<Course> course = new LinkedHashSet<>();
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST}, mappedBy = "users")
+    private Set<Course> courses = new LinkedHashSet<>();
 
-    public Set<Course> getCourse() {
-        return course;
+    public Set<Course> getCourses() {
+        return courses;
     }
 
-    public void setCourse(Set<Course> course) {
-        this.course = course;
+    public void setCourses(Set<Course> courses) {
+        this.courses = courses;
     }
+
+    public User() {
+    }
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
 }
