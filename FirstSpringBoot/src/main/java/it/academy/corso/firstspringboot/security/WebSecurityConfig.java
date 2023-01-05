@@ -3,6 +3,7 @@ package it.academy.corso.firstspringboot.security;
 import it.academy.corso.firstspringboot.security.jwt.AuthEntryPointJwt;
 import it.academy.corso.firstspringboot.security.jwt.AuthTokenFilter;
 import it.academy.corso.firstspringboot.security.services.UserDetailsServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,12 +40,14 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
-      DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-      authProvider.setUserDetailsService(userDetailsService);
-      authProvider.setPasswordEncoder(passwordEncoder());
-      return authProvider;
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+    authProvider.setUserDetailsService(userDetailsService);
+    authProvider.setPasswordEncoder(passwordEncoder());
+
+    return authProvider;
   }
-  
+
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
     return authConfig.getAuthenticationManager();
@@ -54,22 +57,22 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
-  
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
     httpSecurity.cors().and().csrf().disable()
-        .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-        .authorizeRequests().requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/api/course").permitAll()
-        .requestMatchers("/api/course/**").hasRole("ADMIN")
-            .requestMatchers("api/user/**").permitAll()
-        .anyRequest().authenticated();
-    
+            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+            .authorizeRequests().requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/controllerCourse/**").hasRole("MODERATOR")
+            .requestMatchers("/controllerUser/insertRole2/**").hasRole("ADMIN")
+
+            .anyRequest().authenticated();
+
     httpSecurity.authenticationProvider(authenticationProvider());
 
     httpSecurity.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-    
+
     return httpSecurity.build();
   }
 }

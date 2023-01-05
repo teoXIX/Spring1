@@ -37,7 +37,6 @@ public class Course {
     @JoinTable(name = "course_user",
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-
     private Set<User> user = new LinkedHashSet<>();
 
     public Set<User> getUser(){

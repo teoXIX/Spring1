@@ -57,7 +57,6 @@ public class CourseController {
         Optional<Course> _corso = courseRepository.findById(id);
         return new ResponseEntity<Optional<Course>>(_corso, HttpStatus.OK);
     }
-
     @PostMapping(value = "/user/{id}/course")
     public ResponseEntity<Course> CreateCourseUser(@PathVariable Long id, @RequestBody Course course){
         User user = userRepository.getReferenceById(id);
