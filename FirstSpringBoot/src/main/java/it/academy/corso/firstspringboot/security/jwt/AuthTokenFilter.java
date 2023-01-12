@@ -1,6 +1,5 @@
 package it.academy.corso.firstspringboot.security.jwt;
 
-import it.academy.corso.firstspringboot.security.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

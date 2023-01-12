@@ -1,81 +1,116 @@
 package it.academy.corso.firstspringboot.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
 import javax.validation.constraints.*;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 
 @Entity
-@Table(name = "users",
+@Table(name = "User",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "email")
-        })
+                @UniqueConstraint(columnNames = "email"), @UniqueConstraint(columnNames = "password")
+        }
+)
 public class User {
+    @Getter
+    @Setter
     @Id
-    @Setter
-    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Setter
+    @Column(name = "id")
+    private long id;
+
     @Getter
-    @NotBlank
-    @Size(max = 20)
-    private String username;
     @Setter
+    @Column(name = "name")
+    private String name;
+
     @Getter
+    @Setter
     @NotBlank
-    @Size(max = 50)
-    @Email
+    @Column(name = "email")
+    @Size(max = 100)
     private String email;
-    @Setter
+
     @Getter
+    @Setter
     @NotBlank
-    @Size(max = 120)
+    @Column(name = "password")
+    @Size(max = 100)
     private String password;
 
+
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.DETACH,
+                    CascadeType.MERGE,
+                    CascadeType.PERSIST,
+                    CascadeType.REFRESH,
+                    CascadeType.REMOVE
+            })
+    @JoinTable(name = "user_course",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "course_id") })
+    @JsonIgnore
+    private Set<Course> courses = new HashSet<>();
+
+
     @Getter
     @Setter
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.DETACH,
+                    CascadeType.MERGE,
+                    CascadeType.PERSIST,
+                    CascadeType.REFRESH,
+                    CascadeType.REMOVE
+            })
+    @JoinTable(name = "user_ruolo",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "role_id") })
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    @ManyToMany(cascade = CascadeType.DETACH)
-    @JoinTable(name = "course_user",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id"))
-    private Set<Course> courses = new LinkedHashSet<>();
-
-    public Set<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(Set<Course> courses) {
-        this.courses = courses;
-    }
-
-    public User() {
-    }
-
     public User(String username, String email, String password) {
-        this.username = username;
+        this.name = username;
         this.email = email;
         this.password = password;
     }
+
+    public User() {
+
+    }
+
+    public void addRole(Role r) {
+        this.roles.add(r);
+    }
+
+    //metodi
+    public Set<Role> getRoles(){ return this.roles; }
+
+    public Set<Course> getCourses(){ return this.courses; }
+
+    public void addCourse(Course c) {
+        this.courses.add(c);
+        //c.addUser(this);
+    }
+
+    public void removeCourse(long courseID) {
+        Course c = this.courses.stream().filter(t -> t.getId() == courseID).findFirst().orElse(null);
+        if(c != null){
+            this.courses.remove(c);
+            c.getUsers().remove(this);
+        }
+    }
+
+
+    public String getUsername() {
+        return this.name;
+    }
+
 
 }

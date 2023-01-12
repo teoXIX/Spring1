@@ -1,7 +1,6 @@
 package it.academy.corso.firstspringboot.security.jwt;
 
 import io.jsonwebtoken.*;
-import it.academy.corso.firstspringboot.security.services.UserDetailsImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;

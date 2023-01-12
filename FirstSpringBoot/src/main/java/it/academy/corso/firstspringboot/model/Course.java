@@ -1,50 +1,62 @@
 package it.academy.corso.firstspringboot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "course")
+@Table(name = "Course")
 public class Course {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
 
-    @Column(name = "nomeCorso")
-    private String nomeCorso;
+    @Column(name = "name")
+    private String name;
 
-    public Course(){
 
-    }
+    @ManyToMany(mappedBy = "courses")
+    @JsonIgnore
+    private Set<User> users = new HashSet<User>();
 
-    public long getId(){
+
+    @OneToMany(mappedBy="course")
+    private Set<Esame> esami;
+
+    public Course(){}
+
+
+    //getter e setter
+    public long getId() {
         return id;
     }
 
-    public String getNomeCorso() {
-        return nomeCorso;
+    public String getName() {
+        return name;
     }
 
-    public void setNomeCorso(String nomeCorso) {
-        this.nomeCorso = nomeCorso;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @ManyToMany(cascade = CascadeType.DETACH)
-    @JoinTable(name = "course_user",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> user = new LinkedHashSet<>();
 
-    public Set<User> getUser(){
-        return user;
+    public Set<User> getUsers(){
+        return this.users;
     }
-
-    public void setUser(Set<User> user) {
-        this.user = user;
+    public void addUser(User u){
+        this.users.add(u);
+        //u.addCourse(this);
+    }
+    public void removeUser(long userID){
+        User u = this.users.stream().filter(t -> t.getId() == userID).findFirst().orElse(null);
+        if(u != null){
+            this.users.remove(u);
+            u.getCourses().remove(this);
+        }
     }
 
 }
