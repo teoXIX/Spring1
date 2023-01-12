@@ -1,6 +1,7 @@
 package it.academy.corso.firstspringboot.controller;
 
 import it.academy.corso.firstspringboot.model.Course;
+import it.academy.corso.firstspringboot.business.Register;
 import it.academy.corso.firstspringboot.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ public class CourseController {
     @Autowired
     CourseRepository courseRepository;
     UserRepository userRepository;
+    Register register = new Register();
 
     @PostMapping("/course")
     public ResponseEntity<Course> createCourse(@RequestBody Course corso) {
